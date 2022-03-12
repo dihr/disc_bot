@@ -1,4 +1,4 @@
-package bitcoinMarket
+package bitcoin_market
 
 var coins = map[string]string{
 	"AAVE":       "Aave",

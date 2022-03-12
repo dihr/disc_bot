@@ -61,6 +61,7 @@ func (d *discordBotImp) Run() error {
 func (d *discordBotImp) setFunctions() {
 	// map with regex that triggers the command.
 	d.functions["(?i)list"] = d.cmd.ListCoins
+	d.functions["(?i)ticker"] = d.cmd.ListCoinTicker
 }
 
 func (d *discordBotImp) Handler(s *discordgo.Session, m *discordgo.MessageCreate) {
