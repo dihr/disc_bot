@@ -15,6 +15,8 @@ type (
 	BitcoinMarketSvc interface {
 		GetCoins(coin string) map[string]string
 		GetCoinTicker(coin string) (model.Ticker, error)
+		GetOrderBook(coin string) (model.OrderBook, error)
+		GetDaySummary(coin string, date time.Time) (model.DaySummary, error)
 	}
 
 	bitcoinMarketImp struct {
@@ -26,6 +28,77 @@ func NewBitcoinMarket(baseURL string) BitcoinMarketSvc {
 	return &bitcoinMarketImp{
 		baseURL: baseURL,
 	}
+}
+
+func (b *bitcoinMarketImp) GetDaySummary(coin string, date time.Time) (model.DaySummary, error) {
+	client := http.Client{
+		Timeout: 20 * time.Second,
+	}
+	url := fmt.Sprintf("%s/%s/day-summary/%d/%d/%d", b.baseURL, coin,
+		date.Year(), int(date.Month()), date.Day())
+	fmt.Println(url)
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return model.DaySummary{}, err
+	}
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return model.DaySummary{}, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		return model.DaySummary{}, errors.New(fmt.Sprintf("fail to get ticker data [status_code %d]",
+			resp.StatusCode))
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return model.DaySummary{}, err
+	}
+
+	daySummary := model.DaySummary{}
+	if err := json.Unmarshal(body, &daySummary); err != nil {
+		fmt.Println(err.Error())
+		return model.DaySummary{}, err
+	}
+	return daySummary, nil
+}
+
+func (b *bitcoinMarketImp) GetOrderBook(coin string) (model.OrderBook, error) {
+	client := http.Client{
+		Timeout: 20 * time.Second,
+	}
+	url := fmt.Sprintf("%s/%s/orderbook", b.baseURL, coin)
+
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return model.OrderBook{}, err
+	}
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return model.OrderBook{}, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		return model.OrderBook{}, errors.New(fmt.Sprintf("fail to get ticker data [status_code %d]",
+			resp.StatusCode))
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return model.OrderBook{}, err
+	}
+
+	orderBook := model.OrderBook{}
+	if err := json.Unmarshal(body, &orderBook); err != nil {
+		fmt.Println(err.Error())
+		return model.OrderBook{}, err
+	}
+	return orderBook, nil
 }
 
 func (b *bitcoinMarketImp) GetCoinTicker(coin string) (model.Ticker, error) {

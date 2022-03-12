@@ -11,6 +11,7 @@ type (
 	CmdSvc interface {
 		ListCoins(message string) (string, error)
 		ListCoinTicker(message string) (string, error)
+		ListOrderBook(message string) (string, error)
 	}
 
 	cmdImp struct {
@@ -22,6 +23,35 @@ func NewCmd(bmSvc bitcoin_market.BitcoinMarketSvc) CmdSvc {
 	return &cmdImp{
 		bmSvc: bmSvc,
 	}
+}
+
+func (c *cmdImp) ListOrderBook(message string) (string, error) {
+	// Checks if user message contains
+	// coin parameter.
+	if len(strings.Fields(message)) <= 1 {
+		return "", errors.New("invalid command, missing coin param")
+	}
+
+	coin := strings.ToUpper(strings.TrimPrefix(message,
+		"orderbook "))
+
+	orderBook, err := c.bmSvc.GetOrderBook(coin)
+	if err != nil {
+		return "", err
+	}
+	fmt.Println("iahhh", orderBook)
+	var textResponse string
+	textResponse = ":moneybag: sale offers\n"
+	for _, asks := range orderBook.Asks {
+		textResponse += fmt.Sprintf(":Price: __***%d***__ Quantity: __***%d***__ \n", asks[0],
+			asks[1])
+	}
+	textResponse += ":money_with_wings: shopping offers"
+	for _, bids := range orderBook.Bids {
+		textResponse += fmt.Sprintf(":Price: __***%d***__ Quantity: __***%d***__ \n", bids[0],
+			bids[1])
+	}
+	return textResponse, nil
 }
 
 func (c *cmdImp) ListCoinTicker(message string) (string, error) {

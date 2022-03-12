@@ -62,6 +62,7 @@ func (d *discordBotImp) setFunctions() {
 	// map with regex that triggers the command.
 	d.functions["(?i)list"] = d.cmd.ListCoins
 	d.functions["(?i)ticker"] = d.cmd.ListCoinTicker
+	d.functions["^(?i)orderbook"] = d.cmd.ListOrderBook
 }
 
 func (d *discordBotImp) Handler(s *discordgo.Session, m *discordgo.MessageCreate) {
