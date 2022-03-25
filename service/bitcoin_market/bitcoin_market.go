@@ -34,7 +34,7 @@ func (b *bitcoinMarketImp) GetOrderBook(coin string) (model.OrderBook, error) {
 		Timeout: 20 * time.Second,
 	}
 	url := fmt.Sprintf("%s/%s/orderbook", b.baseURL, coin)
-	fmt.Println(url)
+
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return model.OrderBook{}, err
