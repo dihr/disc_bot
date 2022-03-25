@@ -25,6 +25,8 @@ func NewCmd(bmSvc bitcoin_market.BitcoinMarketSvc) CmdSvc {
 	}
 }
 
+// List of shopping offers, ordered from highest to lowest price.
+// List of sales offers, ordered from lowest to highest price.
 func (c *cmdImp) ListOrderBook(message string) (string, error) {
 	// Checks if user message contains
 	// coin parameter.
@@ -35,25 +37,29 @@ func (c *cmdImp) ListOrderBook(message string) (string, error) {
 	coin := strings.ToUpper(strings.TrimPrefix(message,
 		"orderbook "))
 
+	fmt.Print(coin)
 	orderBook, err := c.bmSvc.GetOrderBook(coin)
 	if err != nil {
 		return "", err
 	}
-	fmt.Println("iahhh", orderBook)
+
 	var textResponse string
 	textResponse = ":moneybag: sale offers\n"
-	for _, asks := range orderBook.Asks {
-		textResponse += fmt.Sprintf(":Price: __***%d***__ Quantity: __***%d***__ \n", asks[0],
-			asks[1])
+	for i := 0; i < 10; i++ {
+		textResponse += fmt.Sprintf(":Price: __***%f***__ \tQuantity: __***%f***__ \n", orderBook.Asks[i][0],
+			orderBook.Asks[i][1])
 	}
-	textResponse += ":money_with_wings: shopping offers"
-	for _, bids := range orderBook.Bids {
-		textResponse += fmt.Sprintf(":Price: __***%d***__ Quantity: __***%d***__ \n", bids[0],
-			bids[1])
+
+	textResponse += "\n\n:money_with_wings: shopping offers\n"
+	for i := 0; i < 10; i++ {
+		textResponse += fmt.Sprintf(":Price: __***%f***__ \tQuantity: __***%f***__ \n", orderBook.Bids[i][0],
+			orderBook.Bids[i][1])
 	}
+
 	return textResponse, nil
 }
 
+// Returns information with the summary of the last 24 hours of trading.
 func (c *cmdImp) ListCoinTicker(message string) (string, error) {
 	// Checks if user message contains
 	// coin parameter.
@@ -83,6 +89,7 @@ func (c *cmdImp) ListCoinTicker(message string) (string, error) {
 	return textResponse, nil
 }
 
+// List Digital currency acronym.
 func (c *cmdImp) ListCoins(message string) (string, error) {
 	// Checks if user message contains
 	// coin parameter.

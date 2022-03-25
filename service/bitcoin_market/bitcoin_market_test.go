@@ -3,22 +3,10 @@ package bitcoin_market
 import (
 	"disc_bot/model"
 	"fmt"
-	"github.com/stretchr/testify/assert"
 	"testing"
-	"time"
+
+	"github.com/stretchr/testify/assert"
 )
-
-func TestBitcoinMarketImp_GetDaySummary(t *testing.T) {
-	bmSvc := NewBitcoinMarket("https://www.mercadobitcoin.net/api")
-
-	dateRef, err := time.Parse("2006-01-02", "2022-03-10")
-	assert.Nil(t, err)
-
-	orderBook, err := bmSvc.GetDaySummary("ETH", dateRef)
-	assert.Nil(t, err)
-	assert.NotEqual(t, (model.DaySummary{}), orderBook)
-	fmt.Println(orderBook)
-}
 
 func TestBitcoinMarketImp_GetOrderBook(t *testing.T) {
 	bmSvc := NewBitcoinMarket("https://www.mercadobitcoin.net/api")

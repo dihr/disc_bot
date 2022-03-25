@@ -99,6 +99,7 @@ func isValidMessage(channelID string, mentions []*discordgo.User, authorID strin
 	}
 
 	if len(mentions) == 1 && mentions[0].ID == BOT_ID {
+		fmt.Println(mentions)
 		return true
 	}
 	return false
